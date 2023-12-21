@@ -78,5 +78,35 @@ router.delete('/:id',(req,res,next)=>{
     })
 })
 
+//update request
+router.put('/:id',(req,res,next)=>{
+    Product.findOneAndUpdate({_id:req.params.id},{
+        $set:{
+            code:req.body.code,
+            title:req.body.title,
+            description:req.body.description,
+            mrp:req.body.mrp,
+            sp:req.body.sp,
+            discountPercent:req.body.discountPercent,
+            imagePath:req.body.imagePath
+        }
+        })
+        .then(result=>{
+            res.status(200).json({
+                updated_product:result
+            })
+        })
+        .catch(err=>{
+            console.log(err);
+            res.status(500).json({
+                error:err
+            })
+        })
+})
+
+
+
+
+
 module.exports = router;
 

@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 
-mongoose.connect('');
+mongoose.connect('mongodb+srv://harshi:1234@atlascluster.wylz7vp.mongodb.net/?retryWrites=true&w=majority');
 
 mongoose.connection.on('error',err=>{
     console.log('connection failed');
