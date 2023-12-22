@@ -1,8 +1,9 @@
 const express = require('express');
 const app = express();
-const productRoute = require('./api/routes/product.js');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const productRoute = require('./api/routes/product')
+const userRoute = require('./api/routes/user')
 
 
 mongoose.connect('mongodb+srv://harshi:1234@atlascluster.wylz7vp.mongodb.net/?retryWrites=true&w=majority');
@@ -19,7 +20,8 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
 
-app.use('/product',productRoute)
+app.use('/product',productRoute);
+app.use('/user',userRoute);
 
 
 app.use((req,res,next)=>{
