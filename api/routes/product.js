@@ -2,13 +2,16 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const Product = require('../model/product');
+const checkAuth = require('../middleware/check-auth');
 
-router.get('/',(req,res,next)=>{
+
+//get request
+router.get('/',checkAuth,(req,res,next)=>{
     Product.find()
     .then(result=>{
         res.status(200).json({
             Product:result
-        })
+        }) 
     })
     .catch(err=>{
         console.log(err);
@@ -33,7 +36,7 @@ router.get('/:id',(req,res,next)=>{
     })
 })
 
-router.post('/',(req,res,next)=>{
+router.post('/',checkAuth,(req,res,next)=>{
     const product = new Product({
         _id:new mongoose.Types.ObjectId,
         code:req.body.code,
@@ -63,7 +66,7 @@ router.post('/',(req,res,next)=>{
 
 
 //delete request
-router.delete('/:id',(req,res,next)=>{
+router.delete('/:id',checkAuth,(req,res,next)=>{
     Product.findByIdAndDelete({_id:req.params.id})
     .then(result=>{
         res.status(200).json({
@@ -79,7 +82,7 @@ router.delete('/:id',(req,res,next)=>{
 })
 
 //update request
-router.put('/:id',(req,res,next)=>{
+router.put('/:id',checkAuth,(req,res,next)=>{
     Product.findOneAndUpdate({_id:req.params.id},{
         $set:{
             code:req.body.code,
