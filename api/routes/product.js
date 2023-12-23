@@ -3,6 +3,14 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Product = require('../model/product');
 const checkAuth = require('../middleware/check-auth');
+const cloudinary = require('cloudinary').v2;
+
+
+cloudinary.config({
+    cloud_name: 'de5voeb4d',
+    api_key: '166776838734311',
+    api_secret: '0WT_14vtSUjYeipYFM9A7e_bI4M'
+});
 
 
 //get request
@@ -36,32 +44,39 @@ router.get('/:id',(req,res,next)=>{
     })
 })
 
-router.post('/',checkAuth,(req,res,next)=>{
-    const product = new Product({
-        _id:new mongoose.Types.ObjectId,
-        code:req.body.code,
-        title:req.body.title,
-        description:req.body.description,
-        mrp:req.body.mrp,
-        sp:req.body.sp,
-        discountPercent:req.body.discountPercent,
-        imagePath:req.body.imagePath
+router.post('/',(req,res,next)=>{
 
-    });
-
-    product.save()
-    .then(result=>{
+    const file = req.files.photo;
+    cloudinary.uploader.upload(file.tempFilePath,(error,result)=>{
         console.log(result);
-        res.status(200).json({
-            newproduct:result
+        const product = new Product({
+            _id:new mongoose.Types.ObjectId,
+            code:req.body.code,
+            title:req.body.title,
+            description:req.body.description,
+            mrp:req.body.mrp,
+            sp:req.body.sp,
+            discountPercent:req.body.discountPercent,
+            imagePath:result.url
+    
+        });
+    
+        product.save()
+        .then(result=>{
+            console.log(result);
+            res.status(200).json({
+                newproduct:result
+            })
+        })
+        .catch(err=>{
+            console.log(err);
+            res.status(500).json({
+                error:err
+            })
         })
     })
-    .catch(err=>{
-        console.log(err);
-        res.status(500).json({
-            error:err
-        })
-    })
+
+
 })
 
 
