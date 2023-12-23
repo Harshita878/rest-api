@@ -6,7 +6,7 @@ const productRoute = require('./api/routes/product')
 const userRoute = require('./api/routes/user')
 
 
-mongoose.connect('mongodb+srv://harshi:1234@atlascluster.wylz7vp.mongodb.net/?retryWrites=true&w=majority');
+mongoose.connect('');
 
 mongoose.connection.on('error',err=>{
     console.log('connection failed');
