@@ -1,25 +1,27 @@
 {
-  "name": "my-rest-api",
+  "name": "api",
   "version": "1.0.0",
-  "description": "my rest api",
+  "description": "rest api for mean stack app",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "keywords": [
-    "restful",
     "api"
   ],
-  "author": "harshita",
+  "author": "satya",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^5.1.1",
-    "body-parser": "^1.20.2",
-    "cloudinary": "^1.41.1",
-    "express": "^4.18.2",
-    "express-fileupload": "^1.4.3",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.0.3",
-    "nodemon": "^3.0.2"
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.19.0",
+    "cloudinary": "^1.26.3",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.2.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.13.7",
+    "multer": "^1.4.3",
+    "nodemon": "^2.0.12"
   }
 }

@@ -1,130 +1,161 @@
 const express = require('express');
-const router = express.Router();
 const mongoose = require('mongoose');
+const router = express.Router();
 const Product = require('../model/product');
-const checkAuth = require('../middleware/check-auth');
 const cloudinary = require('cloudinary').v2;
-
+const checkAuth = require('../middleware/check-auth')
 
 cloudinary.config({
-    cloud_name: '',
-    api_key: '',
-    api_secret: ''
+  cloud_name:'',
+  api_key:'',
+  api_secret:''
 });
 
 
-//get request
-router.get('/',checkAuth,(req,res,next)=>{
-    Product.find()
-    .then(result=>{
-        res.status(200).json({
-            Product:result
-        }) 
+// get all products
+router.get('/',(req,res,next)=>{
+  Product.find()
+  .select('_id title productCode description price ctgry photo')
+  .then(result=>{
+    res.status(200).json({
+      product:result
     })
-    .catch(err=>{
-        console.log(err);
-        res.status(500).json({
-            error:err
-        })
+  })
+  .catch(err=>{
+    console.log(err);
+    res.status(500).json({
+      error:err
     })
+  })
 });
 
+//get single product by id
 router.get('/:id',(req,res,next)=>{
-    console.log(req.params.id);
-    Product.findById(req.params.id)
-    .then(result=>{
-        res.status(200).json({
-            Product:result
-        })
+  const _id = req.params.id;
+  Product.findById(_id)
+  .select('_id title productCode description price ctgry photo')
+  .then(result=>{
+    // console.log(result)
+    res.status(200).json({
+      product:result
     })
-    .catch(err=>{
-        res.status(500).json({
-            error:err
-        })
+  })
+  .catch(err=>{
+    console.log(err);
+    res.status(500).json({
+      error:err
     })
+  })
 })
 
+// return data by category
+router.get('/cat/:ctgry',(req,res,next)=>{
+  Product.find({ctgry:req.params.ctgry})
+  .then(result=>{
+    res.status(200).json({
+      product:result
+    })
+  })
+  .catch(err=>{
+    console.log(err);
+    res.status(500).json({
+      error:err
+    })
+  })
+})
+// save product
 router.post('/',(req,res,next)=>{
-
-    const file = req.files.photo;
-    cloudinary.uploader.upload(file.tempFilePath,(error,result)=>{
-        console.log(result);
-        const product = new Product({
-            _id:new mongoose.Types.ObjectId,
-            code:req.body.code,
-            title:req.body.title,
-            description:req.body.description,
-            mrp:req.body.mrp,
-            sp:req.body.sp,
-            discountPercent:req.body.discountPercent,
-            imagePath:result.url
-    
-        });
-    
-        product.save()
-        .then(result=>{
-            console.log(result);
-            res.status(200).json({
-                newproduct:result
-            })
-        })
-        .catch(err=>{
-            console.log(err);
-            res.status(500).json({
-                error:err
-            })
-        })
-    })
-
-
-})
-
-
-//delete request
-router.delete('/:id',checkAuth,(req,res,next)=>{
-    Product.findByIdAndDelete({_id:req.params.id})
+  console.log(req);
+  console.log(req.files);
+  const file = req.files.photo;
+  cloudinary.uploader.upload(file.tempFilePath,(err,result)=>{
+    console.log(result);
+    myproduct = new Product({
+      _id:new mongoose.Types.ObjectId,
+      title:req.body.title,
+      ctgry:req.body.ctgry,
+      price:req.body.price,
+      description:req.body.description,
+      productCode:req.body.productCode,
+      photo:result.url
+    });
+    myproduct.save()
     .then(result=>{
-        res.status(200).json({
-            message: 'Product deleted',
-            result:result
-        })
+      console.log(result);
+      res.status(200).json({
+        new_product:result
+      })
     })
     .catch(err=>{
-        res.status(500).json({
-            error:err
-        })
+      console.log(err);
+      res.status(500).json({
+        error:err
+      })
     })
+  });
+
 })
 
-//update request
-router.put('/:id',checkAuth,(req,res,next)=>{
+// update
+router.put('/:id',(req,res,next)=>{
+  console.log(req.params.id);
+  const file = req.files.photo;
+  console.log(file);
+  cloudinary.uploader.upload(file.tempFilePath,(err,result)=>{
+    console.log(result);
     Product.findOneAndUpdate({_id:req.params.id},{
-        $set:{
-            code:req.body.code,
-            title:req.body.title,
-            description:req.body.description,
-            mrp:req.body.mrp,
-            sp:req.body.sp,
-            discountPercent:req.body.discountPercent,
-            imagePath:req.body.imagePath
-        }
-        })
-        .then(result=>{
-            res.status(200).json({
-                updated_product:result
-            })
-        })
-        .catch(err=>{
-            console.log(err);
-            res.status(500).json({
-                error:err
-            })
-        })
+      $set:{
+        title:req.body.title,
+        ctgry:req.body.ctgry,
+        price:req.body.price,
+        description:req.body.description,
+        productCode:req.body.productCode,
+        photo:result.url
+      }
+    })
+    .then(result=>{
+      res.status(200).json({
+        updated_product:result
+      })
+    })
+    .catch(err=>{
+      console.log(err);
+      res.status(500).json({
+        error:err
+      })
+    })
+  })
+
+})
+
+// get last 6 project 
+router.get('/data/recent',(req,res,next)=>{
+  Product.find().sort({$natural: -1 }).limit(6)
+  .then(result=>{
+    res.status(200).json({
+      product:result
+    })
+  })
 })
 
 
+router.delete('/:productId',(req,res,next)=>{
 
+  Product.remove({_id:req.params.productId})
+  .then(result=>{
+    res.status(200).json({
+      message:'product has been deleted',
+      result:result
+    })
+  })
+  .catch(err=>{
+    console.log(err);
+    res.status(500).json({
+      error:err
+    })
+  })
+
+})
 
 
 module.exports = router;
-
