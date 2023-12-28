@@ -3,18 +3,19 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Category = require('../model/category');
 const cloudinary = require('cloudinary').v2;
+const checkAuth = require('../middleware/check-auth');
 
 
 cloudinary.config({
-  cloud_name:'',
-  api_key:'',
-  api_secret:''
+  cloud_name:'de5voeb4d',
+  api_key:'166776838734311',
+  api_secret:'0WT_14vtSUjYeipYFM9A7e_bI4M'
 });
 
 
 
 
-router.get('/',(req,res,next)=>{
+router.get('/',checkAuth,(req,res,next)=>{
     Category.find()
     .select(' _id name photo')
     .then(result=>{
@@ -31,7 +32,7 @@ router.get('/',(req,res,next)=>{
 })
 
 // save category
-router.post('/',(req,res,next)=>{
+router.post('/',checkAuth,(req,res,next)=>{
     console.log(req);
     console.log(req.files);
     const file = req.files.photo;
